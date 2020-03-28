@@ -1,5 +1,11 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { MainToolbarService } from '../main-toolbar/main-toolbar.service';
 import { changeColour } from './changeColour';
+import { onMouseDown } from './mouseDown';
+import { initShaderProgram } from './shaders';
+import { initbuffer } from './initialise';
+import { drawScene } from './renderCycle';
+
 
 @Component({
   selector: 'app-canvas2d',
@@ -9,12 +15,16 @@ import { changeColour } from './changeColour';
 
 export class Canvas2dComponent implements AfterViewInit {
 
-  @ViewChild('glCanvas', {read: ElementRef, static: false})
-  public glCanvas: ElementRef;
+  @ViewChild('glCanvasRef', {read: ElementRef, static: false})
+  public glCanvasRef: ElementRef;
+  public glCanvas: HTMLCanvasElement;
   public context: WebGLRenderingContext;
 
+  constructor(private mainToolbarService: MainToolbarService) {}
+
   ngAfterViewInit(): void {
-    this.context = (this.glCanvas.nativeElement as HTMLCanvasElement).getContext('webgl');
+    this.glCanvas = this.glCanvasRef.nativeElement as HTMLCanvasElement;
+    this.context = this.glCanvas.getContext('webgl');
 
     // Only continue if WebGL is available and working
     if (this.context === null) {
@@ -27,6 +37,38 @@ export class Canvas2dComponent implements AfterViewInit {
     // Clear the color buffer with specified clear color
     this.context.clear(this.context.COLOR_BUFFER_BIT);
 
-    setTimeout(() => {  changeColour(this.context); }, 4000);
+    // setTimeout(() => {  changeColour(this.context); }, 4000);
+
+    this.getData();
+
+    const shaderProgram = initShaderProgram(this.context);
+    const programInfo = {
+      program: shaderProgram,
+      attribLocations: {
+        vertexPosition: this.context.getAttribLocation(shaderProgram, 'aVertexPosition'),
+      },
+      uniformLocations: {
+        projectionMatrix: this.context.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+        modelViewMatrix: this.context.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+      },
+    };
+    const buffers = initbuffer(this.context);
+
+    drawScene(this.context, programInfo, buffers);
+  }
+
+  @HostListener('onmousedown', ['$event'])
+  onMouseDown(event: any) {
+    onMouseDown(this.context, event as MouseEvent);
+  }
+
+  private getData() {
+    this.mainToolbarService.change.subscribe( value => {
+        if (value) {
+          this.glCanvas.style.cursor = 'crosshair';
+        } else {
+          this.glCanvas.style.cursor = 'default';
+        }
+      });
   }
 }

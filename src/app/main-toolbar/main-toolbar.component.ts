@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MainToolbarService } from './main-toolbar.service';
 
 @Component({
   selector: 'app-main-toolbar',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainToolbarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private service: MainToolbarService) { }
 
   ngOnInit(): void {
+  }
+
+  onButton1CLick() {
+    this.service.toggleButton1Clicked();
   }
 
 }
