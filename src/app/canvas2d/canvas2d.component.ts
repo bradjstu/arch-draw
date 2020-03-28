@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { changeColour } from './changeColour';
 
 @Component({
   selector: 'app-canvas2d',
@@ -22,8 +23,10 @@ export class Canvas2dComponent implements AfterViewInit {
     }
 
     // Set clear color to black, fully opaque
-    this.context.clearColor(0.0, 0.0, 0.0, 1.0);
+    this.context.clearColor(0.0, 0.0, 0.0, 0.1);
     // Clear the color buffer with specified clear color
     this.context.clear(this.context.COLOR_BUFFER_BIT);
+
+    setTimeout(() => {  changeColour(this.context); }, 4000);
   }
 }
