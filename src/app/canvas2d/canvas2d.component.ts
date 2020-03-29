@@ -1,10 +1,13 @@
+import { GeometryStore } from './geometryStore';
 import { Component, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { MainToolbarService } from '../main-toolbar/main-toolbar.service';
 import { changeColour } from './changeColour';
 import { onMouseDown } from './mouseDown';
 import { calculateShaderProgramInfo } from './shaders';
 import { initSquarebuffer } from './initialise';
-import { drawScene } from './renderCycle';
+import { redrawScene } from './renderCycle';
+import { Square, randomSquare } from './square';
+import { vec4 } from 'gl-matrix';
 
 
 @Component({
@@ -16,9 +19,12 @@ import { drawScene } from './renderCycle';
 export class Canvas2dComponent implements AfterViewInit {
 
   @ViewChild('glCanvasRef', {read: ElementRef, static: false})
-  public glCanvasRef: ElementRef;
-  public glCanvas: HTMLCanvasElement;
-  public context: WebGLRenderingContext;
+  private glCanvasRef: ElementRef;
+  private glCanvas: HTMLCanvasElement;
+  private context: WebGLRenderingContext;
+
+  private programInfo;
+  private geometryStore: GeometryStore;
 
   constructor(private mainToolbarService: MainToolbarService) {}
 
@@ -41,17 +47,29 @@ export class Canvas2dComponent implements AfterViewInit {
 
     this.getData();
 
-    const programInfo = calculateShaderProgramInfo(this.context);
-    initSquarebuffer(this.context, programInfo);
+    this.programInfo = calculateShaderProgramInfo(this.context);
+    initSquarebuffer(this.context, this.programInfo);
 
-    drawScene(this.context, programInfo);
+
+    let initialsquares: Array<Square> = [
+      {color: vec4.fromValues(1, 0, 0, 1), translation: vec4.fromValues(0, 0, 0, 0)},
+      {color: vec4.fromValues(0, 1, 0, 1), translation: vec4.fromValues(1, 0, 0, 0)}
+    ];
+
+    this.geometryStore = new GeometryStore(initialsquares);
+
+    redrawScene(this.context, this.programInfo, this.geometryStore.getSquares());
   }
 
-  @HostListener('onmousedown', ['$event'])
-  onMouseDown(event: any) {
-    onMouseDown(this.context, event as MouseEvent);
+  // Clicks in the webGL canvas
+  @HostListener('click', ['$event'])
+  onClick(event: any) {
+
+    this.geometryStore.getSquares().push(randomSquare());
+    redrawScene(this.context, this.programInfo, this.geometryStore.getSquares());
   }
 
+  // Getting Data from other angular components
   private getData() {
     this.mainToolbarService.change.subscribe( value => {
         if (value) {

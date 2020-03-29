@@ -2,7 +2,7 @@ import { mat4, vec4 } from 'gl-matrix';
 import { calculateProjectionMatrix, calculateModelViewMatrix } from './camera';
 import { Square } from './square';
 
-export function drawScene(gl: WebGLRenderingContext, programInfo) {
+export function redrawScene(gl: WebGLRenderingContext, programInfo, squares: Square[]) {
 
   clearScene(gl);
 
@@ -14,10 +14,6 @@ export function drawScene(gl: WebGLRenderingContext, programInfo) {
 
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
-
-  let squares: Array<Square> = [
-    {color: vec4.fromValues(1, 0, 0, 1), translation: vec4.fromValues(0, 0, 0, 0)},
-    {color: vec4.fromValues(0, 1, 0, 1), translation: vec4.fromValues(1, 0, 0, 0)}];
 
   squares.forEach(element => {
     drawSquare(gl, programInfo, projectionMatrix, modelViewMatrix,
