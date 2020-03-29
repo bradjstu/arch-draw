@@ -3,7 +3,7 @@ import { MainToolbarService } from '../main-toolbar/main-toolbar.service';
 import { changeColour } from './changeColour';
 import { onMouseDown } from './mouseDown';
 import { calculateShaderProgramInfo } from './shaders';
-import { initbuffer } from './initialise';
+import { initSquarebuffer } from './initialise';
 import { drawScene } from './renderCycle';
 
 
@@ -42,9 +42,9 @@ export class Canvas2dComponent implements AfterViewInit {
     this.getData();
 
     const programInfo = calculateShaderProgramInfo(this.context);
-    const buffers = initbuffer(this.context);
+    initSquarebuffer(this.context, programInfo);
 
-    drawScene(this.context, programInfo, buffers);
+    drawScene(this.context, programInfo);
   }
 
   @HostListener('onmousedown', ['$event'])

@@ -1,4 +1,4 @@
-export function initbuffer(context: WebGLRenderingContext) {
+export function initSquarebuffer(context: WebGLRenderingContext, programInfo) {
 
     // Create a buffer for the square's positions.
 
@@ -26,7 +26,26 @@ export function initbuffer(context: WebGLRenderingContext) {
                   new Float32Array(positions),
                   context.STATIC_DRAW);
 
-    return {
-      position: positionBuffer,
-    };
+    // Tell WebGL how to pull out the positions from the position
+    // buffer into the vertexPosition attribute.
+    {
+      const numComponents = 2;  // pull out 2 values per iteration
+      const type = context.FLOAT;    // the data in the buffer is 32bit floats
+      const normalize = false;  // don't normalize
+      const stride = 0;         // how many bytes to get from one set of values to the next
+                              // 0 = use type and numComponents above
+      const offset = 0;         // how many bytes inside the buffer to start from
+
+      context.bindBuffer(context.ARRAY_BUFFER, positionBuffer);
+
+      context.vertexAttribPointer(
+        programInfo.attribLocations.vertexPosition,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+
+      context.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+  }
 }
