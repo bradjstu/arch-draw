@@ -15,13 +15,6 @@ export function drawScene(gl: WebGLRenderingContext, programInfo) {
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
 
-  function square1(): Square{
-    return {
-      color: vec4.fromValues(1, 0, 0, 1),
-      translation: vec4.fromValues(1, 0, 0, 1),
-    };
-  }
-
   let squares: Array<Square> = [
     {color: vec4.fromValues(1, 0, 0, 1), translation: vec4.fromValues(0, 0, 0, 0)},
     {color: vec4.fromValues(0, 1, 0, 1), translation: vec4.fromValues(1, 0, 0, 0)}];
