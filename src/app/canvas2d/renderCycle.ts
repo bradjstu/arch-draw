@@ -1,5 +1,6 @@
 import { mat4, vec4 } from 'gl-matrix';
 import { calculateProjectionMatrix, calculateModelViewMatrix } from './camera';
+import { Square } from './square';
 
 export function drawScene(gl: WebGLRenderingContext, programInfo) {
 
@@ -14,19 +15,31 @@ export function drawScene(gl: WebGLRenderingContext, programInfo) {
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
 
-  let squares: Array<vec4> = [vec4.fromValues(1, 0, 0, 1), vec4.fromValues(0, 1, 0, 1)];
-  squares.forEach(elementColor => {
-    drawSquare(gl, programInfo, projectionMatrix, modelViewMatrix, elementColor);
+  function square1(): Square{
+    return {
+      color: vec4.fromValues(1, 0, 0, 1),
+      translation: vec4.fromValues(1, 0, 0, 1),
+    };
+  }
+
+  let squares: Array<Square> = [
+    {color: vec4.fromValues(1, 0, 0, 1), translation: vec4.fromValues(0, 0, 0, 0)},
+    {color: vec4.fromValues(0, 1, 0, 1), translation: vec4.fromValues(1, 0, 0, 0)}];
+
+  squares.forEach(element => {
+    drawSquare(gl, programInfo, projectionMatrix, modelViewMatrix,
+      element.translation, element.color);
   });
 }
 
 function drawSquare(gl: WebGLRenderingContext, programInfo, projectionMatrix, modelViewMatrix,
-                    color: vec4) {
+                    translation: vec4, color: vec4) {
 
   // Set the shader uniforms
   gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
   gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
   gl.uniform4fv(programInfo.uniformLocations.fragColor, color);
+  gl.uniform4fv(programInfo.uniformLocations.translationVector, translation);
 
   const offset = 0;
   const vertexCount = 4;
