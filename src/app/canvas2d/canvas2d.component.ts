@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, AfterViewInit, HostListener } from '@
 import { MainToolbarService } from '../main-toolbar/main-toolbar.service';
 import { changeColour } from './changeColour';
 import { onMouseDown } from './mouseDown';
-import { initShaderProgram } from './shaders';
+import { calculateShaderProgramInfo } from './shaders';
 import { initbuffer } from './initialise';
 import { drawScene } from './renderCycle';
 
@@ -41,17 +41,7 @@ export class Canvas2dComponent implements AfterViewInit {
 
     this.getData();
 
-    const shaderProgram = initShaderProgram(this.context);
-    const programInfo = {
-      program: shaderProgram,
-      attribLocations: {
-        vertexPosition: this.context.getAttribLocation(shaderProgram, 'aVertexPosition'),
-      },
-      uniformLocations: {
-        projectionMatrix: this.context.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-        modelViewMatrix: this.context.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-      },
-    };
+    const programInfo = calculateShaderProgramInfo(this.context);
     const buffers = initbuffer(this.context);
 
     drawScene(this.context, programInfo, buffers);

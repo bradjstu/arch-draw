@@ -1,3 +1,8 @@
+export function calculateShaderProgramInfo(context: WebGLRenderingContext) {
+  const shaderProgram = initShaderProgram(context);
+  return getProgramInfo(context, shaderProgram);
+}
+
 // Vertex shader program
 
 const vsSource = `
@@ -12,15 +17,18 @@ void main() {
 `;
 
 const fsSource = `
+    precision mediump float;
+    uniform vec4 uFragColor;
+
     void main() {
-      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      gl_FragColor = uFragColor;
     }
   `;
 
-  //
+//
 // Initialize a shader program, so WebGL knows how to draw our data
 //
-export function initShaderProgram(context: WebGLRenderingContext) {
+function initShaderProgram(context: WebGLRenderingContext) {
   const vertexShader = loadShader(context, context.VERTEX_SHADER, vsSource);
   const fragmentShader = loadShader(context, context.FRAGMENT_SHADER, fsSource);
 
@@ -65,4 +73,18 @@ function loadShader(gl, type, source) {
   }
 
   return shader;
+}
+
+function getProgramInfo(gl, shaderProgram) {
+  return {
+    program: shaderProgram,
+    attribLocations: {
+      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+    },
+    uniformLocations: {
+      projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+      fragColor: gl.getUniformLocation(shaderProgram, 'uFragColor')
+    },
+  };
 }
