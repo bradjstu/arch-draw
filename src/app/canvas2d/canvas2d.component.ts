@@ -5,8 +5,10 @@ import { calculateShaderProgramInfo } from './shaders';
 import { initSquarebuffer } from './initialise';
 import { redrawScene } from './renderCycle';
 import { Square, randomSquare } from './square';
-import { vec4 } from 'gl-matrix';
+import { vec4, mat4, vec2 } from 'gl-matrix';
 import { BottomBarService } from '../bottom-bar/bottom-bar.service';
+import { worldToScreenTransformation, denormaliseScreenCoordinates, screenToWorldTranformation, normaliseScreenCoordinates } from './coordinateTransform';
+import { calculateModelViewMatrix, calculateProjectionMatrix } from './camera';
 
 
 @Component({
@@ -24,6 +26,8 @@ export class Canvas2dComponent implements AfterViewInit {
 
   private programInfo;
   private geometryStore: GeometryStore;
+  private projectionMatrix: mat4;
+  private modelViewMatrix: mat4;
 
   constructor(private mainToolbarService: MainToolbarService,
               private bottomBarService: BottomBarService) {}
@@ -50,6 +54,11 @@ export class Canvas2dComponent implements AfterViewInit {
     this.programInfo = calculateShaderProgramInfo(this.context);
     initSquarebuffer(this.context, this.programInfo);
 
+    // For now we aren't going to consider a situation where these change
+    // Most likely they will be the same for all things in view
+    // Potentially changing when starting to introduce camera controls
+    this.projectionMatrix = calculateProjectionMatrix(this.context);
+    this.modelViewMatrix = calculateModelViewMatrix(this.context);
 
     const initialsquares: Array<Square> = [
       {color: vec4.fromValues(1, 0, 0, 1), translation: vec4.fromValues(0, 0, 0, 0)},
@@ -58,14 +67,35 @@ export class Canvas2dComponent implements AfterViewInit {
 
     this.geometryStore = new GeometryStore(initialsquares);
 
-    redrawScene(this.context, this.programInfo, this.geometryStore.getSquares());
+    redrawScene(this.context, this.programInfo, this.projectionMatrix, this.modelViewMatrix,
+                this.geometryStore.getSquares());
   }
 
   // Clicks in the webGL canvas
   @HostListener('click', ['$event'])
   onClick(event: any) {
     this.geometryStore.getSquares().push(randomSquare());
-    redrawScene(this.context, this.programInfo, this.geometryStore.getSquares());
+    redrawScene(this.context, this.programInfo, this.projectionMatrix, this.modelViewMatrix,
+                this.geometryStore.getSquares());
+
+         //console.log(worldToScreenTransformation(this.projectionMatrix, this.modelViewMatrix, vec2.fromValues(event.offsetX, event.offsetY)));
+
+    const blah = normaliseScreenCoordinates(vec2.fromValues(220, 146), this.glCanvas.width, this.glCanvas.height);
+    console.log(blah);
+    console.log(screenToWorldTranformation(this.projectionMatrix, this.modelViewMatrix, blah));
+
+    console.log(worldToScreenTransformation
+      (this.projectionMatrix, this.modelViewMatrix, vec2.fromValues(-1, -1)));
+    console.log(worldToScreenTransformation
+      (this.projectionMatrix, this.modelViewMatrix, vec2.fromValues(-1, 1)));
+
+    console.log(denormaliseScreenCoordinates(worldToScreenTransformation
+      (this.projectionMatrix, this.modelViewMatrix, vec2.fromValues(-1, -1)),
+       this.glCanvas.width, this.glCanvas.height));
+    console.log(denormaliseScreenCoordinates(worldToScreenTransformation
+      (this.projectionMatrix, this.modelViewMatrix, vec2.fromValues(-1, 1))
+      , this.glCanvas.width, this.glCanvas.height));
+
   }
 
   // Clicks in the webGL canvas

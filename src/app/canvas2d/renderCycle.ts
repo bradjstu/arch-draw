@@ -2,15 +2,12 @@ import { mat4, vec4 } from 'gl-matrix';
 import { calculateProjectionMatrix, calculateModelViewMatrix } from './camera';
 import { Square } from './square';
 
-export function redrawScene(gl: WebGLRenderingContext, programInfo, squares: Square[]) {
+export function redrawScene(gl: WebGLRenderingContext, programInfo,
+                            projectionMatrix: mat4,
+                            modelViewMatrix: mat4,
+                            squares: Square[]) {
 
   clearScene(gl);
-
-  // For now we aren't going to consider a situation where these change
-  // Most likely they will be the same for all things in view
-  // Potentially changing when starting to introduce camera controls
-  const projectionMatrix = calculateProjectionMatrix(gl);
-  const modelViewMatrix = calculateModelViewMatrix(gl);
 
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
