@@ -20,8 +20,8 @@ export class BottomBarComponent implements OnInit {
   // Getting Data from other angular components
   intialiseSubscriber() {
     this.service.change.subscribe( value => {
-        this.x = value.x;
-        this.y = value.y;
+        this.x = value.x.toFixed(2);
+        this.y = value.y.toFixed(2);
       });
   }
 }

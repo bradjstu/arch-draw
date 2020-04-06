@@ -8,13 +8,12 @@ export function calculateShaderProgramInfo(context: WebGLRenderingContext) {
 const vsSource = `
 attribute vec4 aVertexPosition;
 
-uniform vec4 uTranslationVector;
-
-uniform mat4 uModelViewMatrix;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 void main() {
-  gl_Position = uProjectionMatrix * uModelViewMatrix * (aVertexPosition + uTranslationVector);
+  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
 }
 `;
 
@@ -85,8 +84,8 @@ function getProgramInfo(gl, shaderProgram) {
     },
     uniformLocations: {
       projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-      translationVector: gl.getUniformLocation(shaderProgram, 'uTranslationVector'),
+      viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
+      modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
       fragColor: gl.getUniformLocation(shaderProgram, 'uFragColor')
     },
   };

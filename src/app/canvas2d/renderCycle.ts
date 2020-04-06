@@ -1,5 +1,4 @@
 import { mat4, vec4 } from 'gl-matrix';
-import { calculateProjectionMatrix, calculateModelViewMatrix } from './camera';
 import { Square } from './square';
 
 export function redrawScene(gl: WebGLRenderingContext, programInfo,
@@ -14,18 +13,19 @@ export function redrawScene(gl: WebGLRenderingContext, programInfo,
 
   squares.forEach(element => {
     drawSquare(gl, programInfo, projectionMatrix, modelViewMatrix,
-      element.translation, element.color);
+      element.getModelMatrix(), element.getColor());
   });
 }
 
-function drawSquare(gl: WebGLRenderingContext, programInfo, projectionMatrix, modelViewMatrix,
-                    translation: vec4, color: vec4) {
+function drawSquare(gl: WebGLRenderingContext, programInfo,
+                    projectionMatrix: mat4, viewMatrix: mat4,
+                    modelMatrix: mat4, color: vec4) {
 
   // Set the shader uniforms
   gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
-  gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+  gl.uniformMatrix4fv(programInfo.uniformLocations.viewMatrix, false, viewMatrix);
+  gl.uniformMatrix4fv(programInfo.uniformLocations.modelMatrix, false, modelMatrix);
   gl.uniform4fv(programInfo.uniformLocations.fragColor, color);
-  gl.uniform4fv(programInfo.uniformLocations.translationVector, translation);
 
   const offset = 0;
   const vertexCount = 4;
