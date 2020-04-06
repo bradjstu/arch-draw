@@ -56,7 +56,7 @@ export class Canvas2dComponent implements AfterViewInit {
   // Getting Data from other angular components
   private initaliseSubscribers() {
     this.mainToolbarService.change.subscribe( value => {
-        if (value) {
+        if (value === 'Draw Line') {
           this.glCanvas.style.cursor = 'crosshair';
         } else {
           this.glCanvas.style.cursor = 'default';

@@ -1,5 +1,11 @@
-<div class="btn-group">
-  <button (click)="onButton1CLick()" type="button" class="btn btn-primary">Apple</button>
-  <button type="button" class="btn btn-primary">Samsung</button>
-  <button type="button" class="btn btn-primary">Sony</button>
-</div>
+<mat-button-toggle-group #group="matButtonToggleGroup">
+  <mat-button-toggle value="Draw Line" aria-label="Text align left" (change)="onButtonChange($event.value)">
+    Draw Line
+  </mat-button-toggle>
+  <mat-button-toggle value="center" aria-label="Text align center" (change)="onButtonChange($event.value)">
+    Blank
+  </mat-button-toggle>
+  <mat-button-toggle value="right" aria-label="Text align right" (change)="onButtonChange($event.value)">
+    Blank
+  </mat-button-toggle>
+</mat-button-toggle-group>

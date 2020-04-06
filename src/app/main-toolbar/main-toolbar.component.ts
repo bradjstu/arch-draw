@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MainToolbarService } from './main-toolbar.service';
 
 @Component({
@@ -8,13 +8,15 @@ import { MainToolbarService } from './main-toolbar.service';
 })
 export class MainToolbarComponent implements OnInit {
 
+  @Output() buttonChange = new EventEmitter();
+
   constructor(private service: MainToolbarService) { }
 
   ngOnInit(): void {
   }
 
-  onButton1CLick() {
-    this.service.toggleButton1Clicked();
+  onButtonChange(value) {
+    this.service.toggleButtons(value);
   }
-
 }
+

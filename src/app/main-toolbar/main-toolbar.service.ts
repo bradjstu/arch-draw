@@ -2,14 +2,13 @@ import { EventEmitter } from '@angular/core';
 
 export class MainToolbarService {
 
-  private clicked = false;
+  private clicked = '';
   public change: EventEmitter<any> = new EventEmitter();
 
 
-  toggleButton1Clicked() {
-    this.clicked = !this.clicked;
+  toggleButtons(value) {
+    this.clicked = value;
     this.change.emit(this.clicked);
-    console.log('Hi');
   }
 
 }
