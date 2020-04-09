@@ -7,21 +7,29 @@ import { Square, randomSquare } from './square';
 import { redrawScene } from './renderCycle';
 import { Camera } from './camera';
 import { clipSpaceToWorldSpaceTranformation } from './coordinateTransform';
+import { Settings } from './settings';
+import { Line } from './line';
 
 export class WebglController {
+
+
+  constructor(private context: WebGLRenderingContext) {}
 
   private programInfo;
   private geometryStore: GeometryStore;
   private camera: Camera;
+  private settings: Settings;
 
-  constructor(private context: WebGLRenderingContext) {}
+  private drawingLine: boolean;
+  private placeingLine: boolean;
 
   initialise() {
+    this.settings = new Settings();
+
     // Set clear color to black, fully opaque
     this.context.clearColor(0.0, 0.0, 0.0, 0.1);
     // Clear the color buffer with specified clear color
     this.context.clear(this.context.COLOR_BUFFER_BIT);
-
 
     this.programInfo = calculateShaderProgramInfo(this.context);
     initSquarebuffer(this.context, this.programInfo);
@@ -40,11 +48,29 @@ export class WebglController {
 
   invalidate() {
     redrawScene(this.context, this.programInfo, this.camera.getProjectionMatrix(),
-                this.camera.getViewMatrix(), this.geometryStore.getSquares());
+                this.camera.getViewMatrix(), this.geometryStore.getSquares(),
+                this.geometryStore.getTemporaryLine());
   }
 
-  onMouseClick() {
-    this.geometryStore.getSquares().push(randomSquare());
+  onMouseClick(clipSpaceCoordinates: vec2) {
+    if (this.drawingLine) {
+
+      const worldSpaceCoordinates = clipSpaceToWorldSpaceTranformation(
+        this.camera.getInverseViewProjectMatrix(),
+        this.camera.getZDepth(),
+        clipSpaceCoordinates);
+
+      if (this.placeingLine) {
+        this.placeLine(worldSpaceCoordinates);
+        this.placeingLine = false;
+      } else {
+        this.placePoint(worldSpaceCoordinates);
+        this.placeingLine = true;
+      }
+    } else {
+      this.geometryStore.getSquares().push(randomSquare());
+    }
+
     this.invalidate();
   }
 
@@ -55,5 +81,27 @@ export class WebglController {
       clipSpaceCoordinates);
 
     bottomBarService.mouseCoordinatesChange(worldSpaceCoordinates[0], worldSpaceCoordinates[1]);
+
+    if (this.placeingLine) {
+      this.updateLine(worldSpaceCoordinates);
+      this.invalidate();
+    }
+  }
+
+  setDrawingLine(drawingLine: boolean) {
+    this.drawingLine = drawingLine;
+  }
+
+  updateLine(worldSpaceCoordinates: vec2) {
+    this.geometryStore.getTemporaryLine().updateEndPoint(worldSpaceCoordinates);
+  }
+
+  placeLine(worldSpaceCoordinates: vec2) {
+    this.geometryStore.addSquare(this.geometryStore.getTemporaryLine());
+    this.geometryStore.clearTemporaryLine();
+  }
+
+  placePoint(worldSpaceCoordinates: vec2) {
+    this.geometryStore.setTemporaryLine(new Line(worldSpaceCoordinates, worldSpaceCoordinates, 3));
   }
 }

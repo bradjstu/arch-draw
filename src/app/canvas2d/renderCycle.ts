@@ -1,10 +1,12 @@
 import { mat4, vec4 } from 'gl-matrix';
 import { Square } from './square';
+import { Line } from './line';
 
 export function redrawScene(gl: WebGLRenderingContext, programInfo,
                             projectionMatrix: mat4,
                             modelViewMatrix: mat4,
-                            squares: Square[]) {
+                            squares: Square[],
+                            temporaryLine: Line) {
 
   clearScene(gl);
 
@@ -15,6 +17,11 @@ export function redrawScene(gl: WebGLRenderingContext, programInfo,
     drawSquare(gl, programInfo, projectionMatrix, modelViewMatrix,
       element.getModelMatrix(), element.getColor());
   });
+
+  if (temporaryLine != null) {
+    drawSquare(gl, programInfo, projectionMatrix, modelViewMatrix,
+      temporaryLine.getModelMatrix(), temporaryLine.getColor());
+  }
 }
 
 function drawSquare(gl: WebGLRenderingContext, programInfo,

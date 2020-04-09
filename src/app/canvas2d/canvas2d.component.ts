@@ -41,7 +41,10 @@ export class Canvas2dComponent implements AfterViewInit {
   // Clicks in the webGL canvas
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
-    this.webglController.onMouseClick();
+    const clipSpaceCoordinates = screenSpaceToClipSpaceTransformation(
+      vec2.fromValues(event.offsetX, event.offsetY), this.glCanvas.width, this.glCanvas.height);
+
+    this.webglController.onMouseClick(clipSpaceCoordinates);
   }
 
   // MouseMovement in the webGL canvas
@@ -58,8 +61,10 @@ export class Canvas2dComponent implements AfterViewInit {
     this.mainToolbarService.change.subscribe( value => {
         if (value === 'Draw Line') {
           this.glCanvas.style.cursor = 'crosshair';
+          this.webglController.setDrawingLine(true);
         } else {
           this.glCanvas.style.cursor = 'default';
+          this.webglController.setDrawingLine(false);
         }
       });
   }
