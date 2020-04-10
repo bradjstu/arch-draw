@@ -27,6 +27,7 @@ export class Line extends Square {
     this.setTranslation(
       vec3.fromValues(this.startPoint[0] + lineLength(this.startPoint, this.endPoint) * Math.cos(rotation),
       this.startPoint[1] + lineLength(this.startPoint, this.endPoint) * Math.sin(rotation) , 0));
+    this.calculateModelMatrix();
   }
 
 }

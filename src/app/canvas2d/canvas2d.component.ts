@@ -47,6 +47,12 @@ export class Canvas2dComponent implements AfterViewInit {
     this.webglController.onMouseClick(clipSpaceCoordinates);
   }
 
+  // Right clicks in the webGL canvas
+  @HostListener('contextmenu', ['$event'])
+  onContextMenu(event: MouseEvent) {
+    event.preventDefault();
+  }
+
   // MouseMovement in the webGL canvas
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {

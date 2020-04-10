@@ -25,7 +25,7 @@ export class DisplayObject2d {
 
   }
 
-  private calculateModelMatrix() {
+  protected calculateModelMatrix() {
     mat4.fromRotationTranslationScale(this.modelMatrix,
       this.rotationQuaternion,
       this.translation,
@@ -43,12 +43,10 @@ export class DisplayObject2d {
   protected setRotation(zAxisRotation: number) {
     quat.identity(this.rotationQuaternion);
     quat.rotateZ(this.rotationQuaternion, this.rotationQuaternion, zAxisRotation);
-    this.calculateModelMatrix();
   }
 
   protected setScale(scale: vec3) {
     this.scale = scale;
-    this.calculateModelMatrix();
   }
 
   protected setTranslation(translation: vec3) {
