@@ -1,0 +1,28 @@
+html, body {
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.top {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 50px;
+}
+
+.bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 24px;
+}
+
+.centre {
+  position: fixed;
+  width: 100%;
+  top: 50px;
+  bottom: 24px;
+}

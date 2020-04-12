@@ -24,6 +24,10 @@ export class WebglController {
   private placeingLine: boolean;
 
   initialise() {
+
+    this.context.canvas.width  = (this.context.canvas as HTMLCanvasElement).offsetWidth;
+    this.context.canvas.height = (this.context.canvas as HTMLCanvasElement).offsetHeight;
+
     this.settings = new Settings();
 
     // Set clear color to black, fully opaque
@@ -103,5 +107,13 @@ export class WebglController {
 
   placePoint(worldSpaceCoordinates: vec2) {
     this.geometryStore.setTemporaryLine(new Line(worldSpaceCoordinates, worldSpaceCoordinates, 3));
+  }
+
+  fitToContainer() {
+    this.context.canvas.width  = (this.context.canvas as HTMLCanvasElement).offsetWidth;
+    this.context.canvas.height = (this.context.canvas as HTMLCanvasElement).offsetHeight;
+
+    this.camera.updateCameraAspect(this.context.canvas.width, this.context.canvas.height);
+    this.invalidate();
   }
 }

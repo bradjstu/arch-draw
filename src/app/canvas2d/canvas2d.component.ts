@@ -62,6 +62,12 @@ export class Canvas2dComponent implements AfterViewInit {
     this.webglController.onMouseMove(clipSpaceCoordinates, this.bottomBarService);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.webglController.fitToContainer();
+  }
+
+
   // Getting Data from other angular components
   private initaliseSubscribers() {
     this.mainToolbarService.change.subscribe( value => {
@@ -74,4 +80,8 @@ export class Canvas2dComponent implements AfterViewInit {
         }
       });
   }
+
 }
+
+
+

@@ -10,6 +10,8 @@ export function redrawScene(gl: WebGLRenderingContext, programInfo,
 
   clearScene(gl);
 
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
 

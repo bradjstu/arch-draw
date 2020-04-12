@@ -18,10 +18,10 @@ export class Camera {
     this.calculateViewMatrix();
 
     this.viewProjectionMatrix = mat4.create();
-    mat4.multiply(this.viewProjectionMatrix, this.projectionMatrix, this.viewMatrix);
+    this.calculateViewProjectionMatrix();
 
     this.inverseViewProjectionMatrix = mat4.create();
-    mat4.invert(this.inverseViewProjectionMatrix, this.viewProjectionMatrix);
+    this.calculateInverseViewProjectionMatrix();
 
     this.calculateZDepth();
   }
@@ -46,6 +46,20 @@ export class Camera {
     return this.zDepth;
   }
 
+  private recalculateDependants() {
+    this.calculateViewProjectionMatrix();
+    this.calculateInverseViewProjectionMatrix();
+    this.calculateZDepth();
+  }
+
+  private calculateViewProjectionMatrix() {
+    mat4.multiply(this.viewProjectionMatrix, this.projectionMatrix, this.viewMatrix);
+  }
+
+  private calculateInverseViewProjectionMatrix() {
+    mat4.invert(this.inverseViewProjectionMatrix, this.viewProjectionMatrix);
+  }
+
   private calculateProjectionMatrix(canvasClientWidth: number, canvasClientHeight: number) {
     // Create a perspective matrix, a special matrix that is
     // used to simulate the distortion of perspective in a camera.
@@ -55,11 +69,9 @@ export class Camera {
     // and 100 units away from the camera.
 
     const fieldOfView = 45 * Math.PI / 180;   // in radians
-    // const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const aspect = canvasClientWidth / canvasClientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
-    this.projectionMatrix =  mat4.create();
 
     // note: glmatrix.js always has the first argument
     // as the destination to receive the result.
@@ -71,10 +83,6 @@ export class Camera {
   }
 
   private calculateViewMatrix() {
-    // Set the drawing position to the "identity" point, which is
-    // the center of the scene.
-    this.viewMatrix = mat4.create();
-
     // Now move the drawing position a bit to where we want to
     // start drawing the square.
 
@@ -89,5 +97,10 @@ export class Camera {
     vec4.transformMat4(testVector, testVector, this.viewProjectionMatrix);
 
     this.zDepth = testVector[2] / testVector[3];
+  }
+
+  updateCameraAspect(canvasClientWidth: number, canvasClientHeight: number) {
+    this.calculateProjectionMatrix(canvasClientWidth, canvasClientHeight);
+    this.recalculateDependants();
   }
 }
