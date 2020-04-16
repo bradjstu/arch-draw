@@ -65,8 +65,8 @@ export class WebglController {
         clipSpaceCoordinates);
 
       if (this.placeingLine) {
-        this.placeLine(worldSpaceCoordinates);
-        this.placeingLine = false;
+        this.placeLine();
+        this.placePoint(worldSpaceCoordinates);
       } else {
         this.placePoint(worldSpaceCoordinates);
         this.placeingLine = true;
@@ -100,7 +100,13 @@ export class WebglController {
     this.geometryStore.getTemporaryLine().updateEndPoint(worldSpaceCoordinates);
   }
 
-  placeLine(worldSpaceCoordinates: vec2) {
+  cancelLine() {
+    this.placeingLine = false;
+    this.geometryStore.clearTemporaryLine();
+    this.invalidate();
+  }
+
+  placeLine() {
     this.geometryStore.addSquare(this.geometryStore.getTemporaryLine());
     this.geometryStore.clearTemporaryLine();
   }

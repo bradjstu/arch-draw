@@ -41,10 +41,21 @@ export class Canvas2dComponent implements AfterViewInit {
   // Clicks in the webGL canvas
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
+
     const clipSpaceCoordinates = screenSpaceToClipSpaceTransformation(
-      vec2.fromValues(event.offsetX, event.offsetY), this.glCanvas.width, this.glCanvas.height);
+        vec2.fromValues(event.offsetX, event.offsetY), this.glCanvas.width, this.glCanvas.height);
 
     this.webglController.onMouseClick(clipSpaceCoordinates);
+  }
+
+  @HostListener('mousedown', ['$event'])
+  onMouseDown(event: MouseEvent) {
+
+    if (event.button === 2) {
+      this.webglController.cancelLine();
+    } else if (event.button === 3) {
+      this.webglController.cancelLine();
+    }
   }
 
   // Right clicks in the webGL canvas
@@ -60,6 +71,11 @@ export class Canvas2dComponent implements AfterViewInit {
       vec2.fromValues(event.offsetX, event.offsetY), this.glCanvas.width, this.glCanvas.height);
 
     this.webglController.onMouseMove(clipSpaceCoordinates, this.bottomBarService);
+  }
+
+  @HostListener('wheel', ['$event'])
+  onMousewheel(event: WheelEvent) {
+    console.log(event.deltaY);
   }
 
   @HostListener('window:resize', ['$event'])
