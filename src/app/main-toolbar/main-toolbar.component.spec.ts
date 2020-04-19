@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MainToolbarComponent } from './main-toolbar.component';
+import { MainToolbarService } from './main-toolbar.service';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 describe('MainToolbarComponent', () => {
   let component: MainToolbarComponent;
@@ -8,7 +10,11 @@ describe('MainToolbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MainToolbarComponent ]
+      declarations: [ MainToolbarComponent ],
+      providers: [ MainToolbarService ],
+      imports: [
+        MatButtonToggleModule
+      ]
     })
     .compileComponents();
   }));

@@ -1,3 +1,4 @@
+import { BottomBarService } from './bottom-bar.service';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BottomBarComponent } from './bottom-bar.component';
@@ -8,7 +9,8 @@ describe('BottomBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BottomBarComponent ]
+      declarations: [ BottomBarComponent ],
+      providers: [ BottomBarService ]
     })
     .compileComponents();
   }));

@@ -8,4 +8,12 @@ export class AppPage {
   getTitleText(): Promise<string> {
     return element(by.css('app-root .content span')).getText() as Promise<string>;
   }
+
+  getMainComponents(): Promise<boolean> {
+    return (
+    element(by.css('app-root .top app-main-toolbar')).isPresent() &&
+    element(by.css('app-root .centre app-canvas2d')).isPresent() &&
+    element(by.css('app-root .bottom app-bottom-bar')).isPresent()
+    ) as Promise<boolean>;
+  }
 }
