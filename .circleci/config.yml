@@ -15,14 +15,11 @@ jobs:
             - "node_modules"
       - run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
       - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
-      - run:
-          name: code-coverage
-          command: './coverage/stu-arc report --reporter=text-lcov'
       - store_artifacts:
-          path: test-results.xml
+          path: test-results
           prefix: tests
       - store_artifacts:
           path: coverage
           prefix: coverage
       - store_test_results:
-          path: test-results.xml
+          path: test-results
