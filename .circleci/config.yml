@@ -1,28 +1,28 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/arch-draw
+    working_directory: ~/stu-arc
     docker:
       - image: circleci/node:10-browsers
     steps:
       - checkout
       - restore_cache:
-          key: arch-draw-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: stu-arc-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm install
       - save_cache:
-          key: arch-draw-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: stu-arc-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - "node_modules"
       - run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
       - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
-      - run: 
+      - run:
           name: code-coverage
-          command: './node_modules/.bin/nyc report --reporter=text-lcov'
-      - store_artifacts: 
+          command: './coverage report --reporter=text-lcov'
+      - store_artifacts:
           path: test-results.xml
           prefix: tests
-      - store_artifacts: 
+      - store_artifacts:
           path: coverage
           prefix: coverage
-      - store_test_results: 
+      - store_test_results:
           path: test-results.xml
