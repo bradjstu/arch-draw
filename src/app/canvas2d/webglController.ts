@@ -1,29 +1,34 @@
+import { GeometryStoreService } from './../geometry-store/geometry-store.service';
 import { BottomBarService } from './../bottom-bar/bottom-bar.service';
-import { GeometryStore } from './geometryStore';
 import { vec4, vec3, vec2 } from 'gl-matrix';
 import { calculateShaderProgramInfo } from './shaders';
 import { initSquarebuffer } from './initialise';
-import { Square, randomSquare } from './square';
+import { Square, randomSquare } from '../shapes/square';
 import { redrawScene } from './renderCycle';
 import { Camera } from './camera';
 import { clipSpaceToWorldSpaceTranformation } from './coordinateTransform';
 import { Settings } from './settings';
-import { Line } from './line';
+import { Line } from '../shapes/line';
 
 export class WebglController {
 
-
-  constructor(private context: WebGLRenderingContext) {}
+  constructor(private context: WebGLRenderingContext,
+              private geomtryStoreService: GeometryStoreService) {}
 
   private programInfo;
-  private geometryStore: GeometryStore;
   private camera: Camera;
   private settings: Settings;
 
   private drawingLine: boolean;
   private placeingLine: boolean;
 
+  private squares: Square[] = [];
+  private temporaryLine: Line;
+
   initialise() {
+
+    this.geomtryStoreService.getSquaresObservable().subscribe(squares => this.squares = squares);
+    this.geomtryStoreService.getTemporaryLineObservable().subscribe(temporaryLine => this.temporaryLine = temporaryLine);
 
     this.context.canvas.width  = (this.context.canvas as HTMLCanvasElement).offsetWidth;
     this.context.canvas.height = (this.context.canvas as HTMLCanvasElement).offsetHeight;
@@ -43,8 +48,6 @@ export class WebglController {
       new Square(vec4.fromValues(1, 0, 0, 1), vec3.fromValues(1, 1, 0), 0, vec3.fromValues(1, 1, 1))
     ];
 
-    this.geometryStore = new GeometryStore(initialsquares);
-
     this.camera = new Camera(this.context.canvas.width, this.context.canvas.height);
 
     this.invalidate();
@@ -52,8 +55,7 @@ export class WebglController {
 
   invalidate() {
     redrawScene(this.context, this.programInfo, this.camera.getProjectionMatrix(),
-                this.camera.getViewMatrix(), this.geometryStore.getSquares(),
-                this.geometryStore.getTemporaryLine());
+                this.camera.getViewMatrix(), this.squares, this.temporaryLine);
   }
 
   onMouseClick(clipSpaceCoordinates: vec2) {
@@ -72,7 +74,7 @@ export class WebglController {
         this.placeingLine = true;
       }
     } else {
-      this.geometryStore.getSquares().push(randomSquare());
+      this.geomtryStoreService.addSquare(randomSquare());
     }
 
     this.invalidate();
@@ -97,22 +99,23 @@ export class WebglController {
   }
 
   updateLine(worldSpaceCoordinates: vec2) {
-    this.geometryStore.getTemporaryLine().updateEndPoint(worldSpaceCoordinates);
+    this.temporaryLine.updateEndPoint(worldSpaceCoordinates);
+    this.geomtryStoreService.setTemporaryLine(this.temporaryLine);
   }
 
   cancelLine() {
     this.placeingLine = false;
-    this.geometryStore.clearTemporaryLine();
+    this.geomtryStoreService.clearTemporaryLine();
     this.invalidate();
   }
 
   placeLine() {
-    this.geometryStore.addSquare(this.geometryStore.getTemporaryLine());
-    this.geometryStore.clearTemporaryLine();
+    this.geomtryStoreService.addSquare(this.temporaryLine);
+    this.geomtryStoreService.clearTemporaryLine();
   }
 
   placePoint(worldSpaceCoordinates: vec2) {
-    this.geometryStore.setTemporaryLine(new Line(worldSpaceCoordinates, worldSpaceCoordinates, 3));
+    this.geomtryStoreService.setTemporaryLine(new Line(worldSpaceCoordinates, worldSpaceCoordinates, 3));
   }
 
   fitToContainer() {

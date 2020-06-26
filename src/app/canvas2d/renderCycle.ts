@@ -1,6 +1,6 @@
 import { mat4, vec4 } from 'gl-matrix';
-import { Square } from './square';
-import { Line } from './line';
+import { Square } from '../shapes/square';
+import { Line } from '../shapes/line';
 
 export function redrawScene(gl: WebGLRenderingContext, programInfo,
                             projectionMatrix: mat4,

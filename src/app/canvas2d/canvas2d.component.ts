@@ -1,3 +1,4 @@
+import { GeometryStoreService } from './../geometry-store/geometry-store.service';
 import { Component, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { MainToolbarService } from '../main-toolbar/main-toolbar.service';
 import { BottomBarService } from '../bottom-bar/bottom-bar.service';
@@ -19,7 +20,8 @@ export class Canvas2dComponent implements AfterViewInit {
   private webglController: WebglController;
 
   constructor(private mainToolbarService: MainToolbarService,
-              private bottomBarService: BottomBarService) {}
+              private bottomBarService: BottomBarService,
+              private geometryStoreService: GeometryStoreService) {}
 
   ngAfterViewInit(): void {
     this.glCanvas = this.glCanvasRef.nativeElement as HTMLCanvasElement;
@@ -32,7 +34,7 @@ export class Canvas2dComponent implements AfterViewInit {
       return;
     }
 
-    this.webglController = new WebglController(context);
+    this.webglController = new WebglController(context, this.geometryStoreService);
     this.webglController.initialise();
 
     this.initaliseSubscribers();
